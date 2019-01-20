@@ -57,4 +57,4 @@ while True:
             send_email(emails) 
             emails=[]
 
-        time.sleep(1)
+    time.sleep(60*10)
