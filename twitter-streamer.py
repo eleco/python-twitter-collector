@@ -7,6 +7,7 @@ import os
 import sendgrid
 from sendgrid.helpers.mail import *
 
+
 #twitter settings 
 consumer_key = os.environ.get('TWITTER_CONSUMER_KEY')
 consumer_secret = os.environ.get('TWITTER_CONSUMER_SECRET')
@@ -21,6 +22,7 @@ to_email= Email(os.environ.get('SENDGRID_RECIPIENT'))
 hyperlink_format = '<a href="{link}">{text}</a>'
 emailing_threshold=20
 
+
 #variables
 last_id=1
 emails=[]
@@ -33,7 +35,7 @@ def send_email(emails):
     sg = sendgrid.SendGridAPIClient(sendgrid_key)
     from_email = Email("twittercollector@noreply")
     subject = emails[0]['text']
-    content = Content("text/html", "<br><br>".join(e['user'] + " : "  + hyperlink_format.format(link=e['url'], text=e['text']) for e in emails))
+    content = Content("text/html", "<p>".join(e['user'] + "<br>"  + hyperlink_format.format(link=e['url'], text=e['text']) for e in emails) +"</p>")
     mail = Mail(from_email, subject, to_email, content)
     response = sg.client.mail.send.post(request_body=mail.get())
     
@@ -50,6 +52,7 @@ while True:
         last_id = int(tweet.id_str) if last_id < int(tweet.id_str) else last_id    
         
         if tweet.entities['urls']:
+
             emails.append({'user':tweet.user.screen_name , 'text': tweet.full_text, 'url': tweet.entities['urls'][0]['expanded_url']})
             print ("tweet id :" + tweet.id_str + " last_id: " + str(last_id)  + " extracted: " + str(emails[-1]) + " emails in queue: " + str(len(emails)))
 
