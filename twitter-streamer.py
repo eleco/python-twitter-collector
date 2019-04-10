@@ -58,7 +58,7 @@ while True:
     tweets = tweepy.Cursor(api.home_timeline, wait_on_rate_limit=True, tweet_mode='extended', since_id=last_tweet_id).items(100)
     for index, tweet in enumerate(tweets):    
         
-        last_tweet_id = int(tweet.id_str) if last_tweet_id < int(tweet.id_str) else last_tweet_id    
+        last_tweet_id = int(tweet.id_str) if int(last_tweet_id) < int(tweet.id_str) else last_tweet_id    
         
         if tweet.entities['urls']:
 
