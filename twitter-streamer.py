@@ -48,7 +48,7 @@ def send_email(emails):
 
 
 if ON_HEROKU:
-    db=redis.from_url(os.environ['REDISCLOUD_URL'])    
+    db=redis.from_url(os.environ['REDIS_URL'])    
     last_tweet_id = db.get('last_tweet_id') 
 
 while True:
