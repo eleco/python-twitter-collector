@@ -51,6 +51,8 @@ if ON_HEROKU:
     db=redis.from_url(os.environ['REDIS_URL'])    
     last_tweet_id = db.get('last_tweet_id') or '1'
 
+print("*** starting up ***")
+
 while True:
 
     print ("Fetching tweets since_id: " + str(last_tweet_id))
