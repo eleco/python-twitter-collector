@@ -1,0 +1,13 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+tweepy = "==3.7.0"
+sendgrid = "==5.6.0"
+
+[requires]
+python_version = "3.6"
