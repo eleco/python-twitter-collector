@@ -6,6 +6,7 @@ from tweepy.streaming import StreamListener
 import os
 import sendgrid
 from sendgrid.helpers.mail import *
+import redis
 
 
 #twitter settings 
@@ -18,7 +19,7 @@ access_secret = os.environ.get('TWITTER_ACCESS_SECRET')
 sendgrid_key = os.environ.get('SENDGRID_KEY')
 to_email= Email(os.environ.get('SENDGRID_RECIPIENT'))
 
-#on heroku
+#heroku specific
 ON_HEROKU = 'ON_HEROKU' in os.environ
 
 #constants
@@ -27,8 +28,8 @@ emailing_threshold=20
 
 
 #variables
-last_tweet_id= os.environ.get('LATEST_TWEET_ID')
 emails=[]
+last_tweet_id=1
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_key, access_secret)
@@ -46,8 +47,9 @@ def send_email(emails):
         return 'An error occurred: {}'.format(response.body), response.status_code
 
 
-if not last_tweet_id:
-    last_tweet_id = 1
+if ON_HEROKU:
+    db=redis.from_url(os.environ['REDISCLOUD_URL'])    
+    last_tweet_id = db.get('last_tweet_id') 
 
 while True:
 
@@ -68,6 +70,6 @@ while True:
             emails=[]
 
     if ON_HEROKU:
-        os.system('heroku config:set LAST_TWEET_ID=' + str(last_tweet_id))
+        db.set('last_tweet_id',last_tweet_id)
 
     time.sleep(60*10)
