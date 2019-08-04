@@ -40,15 +40,16 @@ api = tweepy.API(auth)
 def format_email(emails):
     html=""
     for e in emails:
-        subject = e['text'].strip().replace('\n\n', '\n')
+        text = e['text'].strip().replace('\n\n', '\n')
         links =''.join(( hyperlink_format.format(link=l['url'], text=l['title'].strip().replace('\n\n', '\n')) for l in e['links']))
-        html +=  "<p>" + e['user'] + "<br>" + subject + "<br>" + links + "</p>"
+        html +=  "<p>" + e['user'] + "<br>" + text + "<br>" + links + "</p>"
 
 
 def send_email(emails):
     sg = sendgrid.SendGridAPIClient(sendgrid_key)
     from_email = Email("twittercollector@noreply")
     content = Content("text/html", format(emails))
+    subject = emails[0]['text']
     mail = Mail(from_email, subject, to_email, content)
     response = sg.client.mail.send.post(request_body=mail.get())
     
