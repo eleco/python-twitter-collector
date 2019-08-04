@@ -41,7 +41,7 @@ def format_email(emails):
     html=""
     for e in emails:
         text = e['text'].strip().replace('\n\n', '\n')
-        links =''.join(( hyperlink_format.format(link=l['url'], text=l['title'].strip().replace('\n\n', '\n')) for l in e['links']))
+        links =''.join(( hyperlink_format.format(link=l['url'], text=l['title']) for l in e['links']))
         html +=  "<p>" + e['user'] + "<br>" + text + "<br>" + links + "</p>"
 
 
@@ -79,7 +79,9 @@ while True:
             for tweet_url in tweet.entities['urls']:
                 r = requests.get(tweet_url['expanded_url'])
                 tree = fromstring(r.content)
-                title = tree.findtext('.//title').strip()
+                title = tree.findtext('.//title')
+                if title is not None:
+                    title = title.strip().replace('\n\n', '\n')
                 links.append({"title":title, "url": tweet_url['expanded_url']})
                 full_text = full_text.replace(tweet_url['url'],'')
                 
