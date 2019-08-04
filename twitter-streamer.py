@@ -26,7 +26,7 @@ ON_HEROKU = 'ON_HEROKU' in os.environ
 
 #constants
 hyperlink_format = '<a href="{link}">{text}</a>'
-emailing_threshold=20
+emailing_threshold=10
 
 #variables
 emails=[]
