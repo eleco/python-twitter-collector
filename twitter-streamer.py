@@ -46,6 +46,7 @@ def format_email(emails):
     html+="</body></html>"
     return html
 
+
 def send_email(emails):
     sg = sendgrid.SendGridAPIClient(sendgrid_key)
     from_email = Email("twittercollector@noreply")
@@ -53,10 +54,21 @@ def send_email(emails):
     subject = emails[0]['text']
     mail = Mail(from_email, subject, to_email, content)
     response = sg.client.mail.send.post(request_body=mail.get())
-    
+        
     if response.status_code != 202:
         return 'An error occurred: {}'.format(response.body), response.status_code
 
+
+def fetch_title(url):
+    try:
+        r = requests.get(url)
+        tree = fromstring(r.content)
+        title = tree.findtext('.//title')
+        return title.strip().replace('\n\n', '\n') if title is not None else 'no title'
+    except:
+        print('unable to fetch title from url:', url)
+        return "no title"
+       
 
 if ON_HEROKU:
     db=redis.from_url(os.environ['REDIS_URL'])    
@@ -78,11 +90,7 @@ while True:
             full_text = tweet.full_text
            
             for tweet_url in tweet.entities['urls']:
-                r = requests.get(tweet_url['expanded_url'])
-                tree = fromstring(r.content)
-                title = tree.findtext('.//title')
-                if title is not None:
-                    title = title.strip().replace('\n\n', '\n')
+                title = fetch_title(tweet_url['expanded_url'])
                 links.append({"title":title, "url": tweet_url['expanded_url']})
                 full_text = full_text.replace(tweet_url['url'],'')
                 
