@@ -58,7 +58,6 @@ def send_email(emails):
     if response.status_code != 202:
         return 'An error occurred: {}'.format(response.body), response.status_code
 
-
 def fetch_title(url):
     try:
         r = requests.get(url)
@@ -93,10 +92,16 @@ while True:
                 title = fetch_title(tweet_url['expanded_url'])
                 links.append({"title":title, "url": tweet_url['expanded_url']})
                 full_text = full_text.replace(tweet_url['url'],'')
-                
-            emails.append({'user':tweet.user.screen_name , 'text': full_text,  "links":links})
+
+
+            json ={'tweet id': tweet.id_str, 'user':tweet.user.screen_name , 'text': full_text,  "links":links}
             print ("tweet id :" + tweet.id_str + " last_id: " + str(last_tweet_id)  + " extracted: " + str(emails[-1]) + " emails in queue: " + str(len(emails)))
 
+            #store in redis
+            db.rpush('tweets', json)                
+            
+            #send email
+            emails.append(json)
             if len(emails)>=emailing_threshold:
                 send_email(emails) 
                 emails=[]
