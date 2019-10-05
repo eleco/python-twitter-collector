@@ -1,9 +1,9 @@
-import tweepy
 import time
-from tweepy import Stream
+import json
+import os
+import tweepy
 from tweepy import Stream
 from tweepy.streaming import StreamListener
-import os
 import sendgrid
 from sendgrid.helpers.mail import *
 import redis
@@ -94,13 +94,13 @@ while True:
                 full_text = full_text.replace(tweet_url['url'],'')
 
 
-            json ={'tweet id': tweet.id_str, 'user':tweet.user.screen_name , 'text': full_text,  "links":links}
+            dict ={'tweet id': tweet.id_str, 'user':tweet.user.screen_name , 'text': full_text,  "links":links}
             
             #store in redis
-            db.rpush('tweets', json)                
+            db.rpush('tweets', json.dumps(dict))                
             
             #send email
-            emails.append(json)
+            emails.append(dict)
             if len(emails)>=emailing_threshold:
                 send_email(emails) 
                 emails=[]
