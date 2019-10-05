@@ -95,8 +95,7 @@ while True:
 
 
             json ={'tweet id': tweet.id_str, 'user':tweet.user.screen_name , 'text': full_text,  "links":links}
-            print ("tweet id :" + tweet.id_str + " last_id: " + str(last_tweet_id)  + " extracted: " + str(emails[-1]) + " emails in queue: " + str(len(emails)))
-
+            
             #store in redis
             db.rpush('tweets', json)                
             
@@ -105,6 +104,10 @@ while True:
             if len(emails)>=emailing_threshold:
                 send_email(emails) 
                 emails=[]
+
+            print ("tweet id :" + tweet.id_str + " last_id: " + str(last_tweet_id)  + " emails in queue: " + str(len(emails)))
+
+
 
     if ON_HEROKU:
         db.set('last_tweet_id',last_tweet_id)
