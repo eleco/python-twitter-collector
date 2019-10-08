@@ -94,7 +94,7 @@ while True:
                 full_text = full_text.replace(tweet_url['url'],'')
 
 
-            dict ={'tweet id': tweet.id_str, 'user':tweet.user.screen_name , 'text': full_text,  "links":links}
+            dict ={'tweetid': tweet.id_str, 'user':tweet.user.screen_name , 'text': full_text,  "links":links}
             
             #store in redis
             db.rpush('tweets', json.dumps(dict))                
