@@ -9,7 +9,8 @@ from sendgrid.helpers.mail import *
 import redis
 import requests
 from lxml.html import fromstring
-
+import pymongo
+from pymongo import MongoClient
 
 #twitter settings 
 consumer_key = os.environ.get('TWITTER_CONSUMER_KEY')
@@ -31,6 +32,12 @@ emailing_threshold=10
 #variables
 emails=[]
 last_tweet_id=1
+
+#mongo
+mongodb_url = os.environ.get('MONGO_URL')
+mongo_db = os.environ.get('MONGO_DB')
+mongoclient = MongoClient(mongodb_url)
+mongodb = mongoclient[mongo_db]
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_key, access_secret)
@@ -96,8 +103,9 @@ while True:
 
             dict ={'tweetid': tweet.id_str, 'user':tweet.user.screen_name , 'text': full_text,  "links":links}
             
-            #store in redis
-            db.rpush('tweets', json.dumps(dict))                
+            #store in mongo
+            mongo_tweets = mongodb.tweets
+            mongo_tweets.insert_one(dict)               
             
             #send email
             emails.append(dict)

@@ -11,6 +11,7 @@ tweepy = "==3.7.0"
 sendgrid = "==5.6.0"
 redis = "*"
 lxml = "*"
+pymongo = "*"
 
 [requires]
 python_version = "3.6"
