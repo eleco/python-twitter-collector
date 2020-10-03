@@ -4,8 +4,6 @@ import os
 import tweepy
 from tweepy import Stream
 from tweepy.streaming import StreamListener
-import sendgrid
-from sendgrid.helpers.mail import *
 import redis
 import requests
 from lxml.html import fromstring
@@ -18,9 +16,11 @@ consumer_secret = os.environ.get('TWITTER_CONSUMER_SECRET')
 access_key = os.environ.get('TWITTER_ACCESS_KEY')
 access_secret = os.environ.get('TWITTER_ACCESS_SECRET')
 
-#sendgrid settings
-sendgrid_key = os.environ.get('SENDGRID_KEY')
-to_email= Email(os.environ.get('SENDGRID_RECIPIENT'))
+#mailgun settings
+mailgun_key = os.environ.get('MAILGUN_KEY')
+mailgun_sandbox= os.environ.get('MAILGUN_SANDBOX')
+to_email= Email(os.environ.get('MAILGUN_RECIPIENT'))
+
 
 #heroku specific
 ON_HEROKU = 'ON_HEROKU' in os.environ
@@ -55,15 +55,21 @@ def format_email(emails):
 
 
 def send_email(emails):
-    sg = sendgrid.SendGridAPIClient(sendgrid_key)
-    from_email = Email("twittercollector@noreply")
-    content = Content("text/html", format_email(emails))
-    subject = emails[0]['text']
-    mail = Mail(from_email, subject, to_email, content)
-    response = sg.client.mail.send.post(request_body=mail.get())
-        
-    if response.status_code != 202:
-        return 'An error occurred: {}'.format(response.body), response.status_code
+    try:
+        request_url = 'https://api.mailgun.net/v2/{0}/messages'.format(mailgun_sandbox)
+        request = requests.post(request_url, auth=('api', mailgun_key), data={
+            'from': 'twittercollector@noreply',
+            'to': to_email,
+            'subject': emails[0]['text'],
+            'html': format_email(emails)
+        })
+
+        print ('Status: {0}'.format(request.status_code))
+        print ('Body:   {0}'.format(request.text))
+    except Exception as e:
+       print('An error occurred: ',e)
+
+
 
 def fetch_title(url):
     try:
