@@ -19,7 +19,7 @@ access_secret = os.environ.get('TWITTER_ACCESS_SECRET')
 #mailgun settings
 mailgun_key = os.environ.get('MAILGUN_KEY')
 mailgun_sandbox= os.environ.get('MAILGUN_SANDBOX')
-to_email= Email(os.environ.get('MAILGUN_RECIPIENT'))
+to_email= os.environ.get('MAILGUN_RECIPIENT')
 
 
 #heroku specific
