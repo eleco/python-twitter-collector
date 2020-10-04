@@ -58,7 +58,7 @@ def send_email(emails):
     try:
         request_url = 'https://api.mailgun.net/v2/{0}/messages'.format(mailgun_sandbox)
         request = requests.post(request_url, auth=('api', mailgun_key), data={
-            'from': 'twittercollector@noreply',
+            'from': 'me@twittercollector.xyz',
             'to': to_email,
             'subject': emails[0]['text'],
             'html': format_email(emails)
